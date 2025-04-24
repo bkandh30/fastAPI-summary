@@ -5,6 +5,8 @@ services:
     volumes:
       - ./app:/usr/src/app/app
       - ./tests:/usr/src/app/tests
+      - ./pyproject.toml:/usr/src/app/pyproject.toml
+      - ./migrations:/usr/src/app/migrations
     ports:
       - 8004:8000
     environment:

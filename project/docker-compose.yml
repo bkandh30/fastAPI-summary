@@ -4,6 +4,7 @@ services:
     command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
     volumes:
       - ./app:/usr/src/app/app
+      - ./tests:/usr/src/app/tests
     ports:
       - 8004:8000
     environment:

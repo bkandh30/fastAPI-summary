@@ -87,3 +87,36 @@ The API provides the following endpoints based on RESTful conventions:
     docker compose logs -f web # Follow logs for the web service
     docker compose logs web-db # View logs for the database service
     ```
+
+## Database Migrations
+
+Database schema migrations are handled using [Aerich](https://github.com/tortoise/aerich) (the migration tool for Tortoise ORM). Migration files are stored in the `project/migrations` directory (ensure this is volume mapped in `docker-compose.yml` and committed to Git). Aerich configuration is typically managed in `pyproject.toml`.
+
+**Common Commands:** (Run from the directory containing `docker-compose.yml`, typically `project/`)
+
+- **Initialize Aerich (only once per project):**
+  ```bash
+  # Ensure pyproject.toml with [tool.aerich] section exists first
+  # Or run init and copy the config out of the container
+  docker compose exec web aerich init -t app.db.TORTOISE_ORM
+  docker compose exec web aerich init-db
+  ```
+- **Generate Migrations (after changing models in `app/models/tortoise.py`):**
+  ```bash
+  docker compose exec web aerich migrate --name <migration_name> # e.g., add_summary_length_field
+  ```
+- **Apply Migrations:**
+  ```bash
+  docker compose exec web aerich upgrade
+  ```
+- **Downgrade Migrations:**
+  ```bash
+  docker compose exec web aerich downgrade
+  ```
+- **Show Status:**
+  ```bash
+  docker compose exec web aerich history
+  docker compose exec web aerich heads
+  ```
+
+**Note:** Ensure `generate_schemas=False` is set in the `register_tortoise` call in `main.py` when using Aerich.

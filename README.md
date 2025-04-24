@@ -10,11 +10,14 @@ Testing is integral to this project, employing `pytest` for robust unit and inte
 
 ## Technology Stack
 
-- **Language:** Python 3.x
+- **Language:** Python 3.13
 - **Web Framework:** FastAPI (Asynchronous)
-- **Database:** PostgreSQL
+- **Database:** PostgreSQL (via Docker)
 - **ORM:** Tortoise ORM (Asynchronous)
-- **Containerization:** Docker
+- **Migrations:** Aerich
+- **Data Validation:** Pydantic
+- **Configuration:** Pydantic Settings
+- **Containerization:** Docker, Docker Compose
 - **Testing Framework:** Pytest
 - **CI/CD:** GitHub Actions
 - **Deployment Platform:** Heroku
@@ -39,3 +42,48 @@ The API provides the following endpoints based on RESTful conventions:
 | `/summaries`      | `POST`      | CREATE         | Add a new text summary            |
 | `/summaries/{id}` | `PUT`       | UPDATE         | Update an existing summary by ID  |
 | `/summaries/{id}` | `DELETE`    | DELETE         | Delete a summary by ID            |
+
+## Getting Started
+
+### Prerequisites
+
+- Docker ([Install Docker](https://docs.docker.com/get-docker/))
+- Docker Compose ([Comes with Docker Desktop or install separately](https://docs.docker.com/compose/install/))
+
+### Running Locally
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone https://github.com/bkandh30/fastAPI-summary.git
+    cd fastapi-summary/project # Navigate to the directory with docker-compose.yml
+    ```
+
+2.  **Build and Start Containers:**
+
+    ```bash
+    docker compose up -d --build
+    ```
+
+    - This command builds the images for the `web` and `web-db` services (if they don't exist or need updating) and starts them in detached mode.
+    - The first time running `web-db` might take a moment to initialize the database. The `web` service's entrypoint script will wait for the database to be ready before starting FastAPI.
+
+3.  **Apply Migrations (Optional but Recommended):** If you pull changes that include new migrations, or to ensure the DB is up-to-date:
+
+    ```bash
+    docker compose exec web aerich upgrade
+    ```
+
+4.  **Access the API:** The API should now be available at `http://localhost:8004` (or your mapped host port). You can test the ping endpoint: `http://localhost:8004/ping`.
+
+5.  **Stopping the services:**
+
+    ```bash
+    docker compose down
+    ```
+
+6.  **View Logs:**
+    ```bash
+    docker compose logs -f web # Follow logs for the web service
+    docker compose logs web-db # View logs for the database service
+    ```

@@ -8,21 +8,22 @@ RUN mkdir -p /home/app
 RUN addgroup --system app && adduser --system --group app
 
 # create the appropriate directories
-ENV HOME=/home/app
+ENV HOME=/home/project/app
 ENV APP_HOME=/home/app/web
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
 # set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-ENV ENVIRONMENT prod
-ENV TESTING 0
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV ENVIRONMENT=prod
+ENV TESTING=0
 
 # install system dependencies
 RUN apt-get update \
     && apt-get -y install netcat-traditional gcc postgresql \
-    && apt-get clean
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # install python dependencies
 RUN pip install --upgrade pip

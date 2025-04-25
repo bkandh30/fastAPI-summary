@@ -1,7 +1,7 @@
 from app.models.pydantic import SummaryPayloadSchema
 from app.models.tortoise import TextSummary
 
-from typing import Union
+from typing import Union, Optional
 from typing import List
 from fastapi import HTTPException
 
@@ -15,9 +15,9 @@ async def post(payload: SummaryPayloadSchema) -> int:
     return summary.id
 
 async def get(id: int) -> Union[dict, None]:
-    summary = await TextSummary.filter(id=id).first().values()
+    summary = await TextSummary.filter(id=id).first()
     if not summary:
-        return HTTPException(status_code=404, detail="Summary not found")
+        raise HTTPException(status_code=404, detail="Summary not found")
     return summary
 
 

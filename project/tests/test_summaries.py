@@ -11,18 +11,23 @@ def test_create_summary(test_app_with_db):
 
 
 def test_create_summaries_invalid_json(test_app):
-    response = test_app.post("/summaries", data=json.dumps({}))
+    response = test_app.post("/summaries/", data=json.dumps({}))
     assert response.status_code == 422
     assert response.json() == {
         "detail": [
             {
                 "input": {},
-                "loc": ["body","url"],
+                "loc": ["body", "url"],
                 "msg": "Field required",
                 "type": "missing",
             }
         ]
     }
+
+    response = test_app.post("/summaries/", data=json.dumps({"url": "invalid://url"}))
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["msg"] == "URL scheme should be 'http' or 'https'"
+
 
 def test_read_summary(test_app_with_db):
     response = test_app_with_db.post("/summaries", data=json.dumps({"url": "https://foo.bar"}))

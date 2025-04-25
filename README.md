@@ -10,26 +10,27 @@ Testing is integral to this project, employing `pytest` for robust unit and inte
 
 ## Technology Stack
 
-- **Language:** Python 3.13
-- **Web Framework:** FastAPI (Asynchronous)
+- **Language:** Python 3.x
+- **Web Framework:** FastAPI (ASGI)
 - **Database:** PostgreSQL (via Docker)
 - **ORM:** Tortoise ORM (Asynchronous)
 - **Migrations:** Aerich
 - **Data Validation:** Pydantic
 - **Configuration:** Pydantic Settings
 - **Containerization:** Docker, Docker Compose
-- **Testing Framework:** Pytest
-- **CI/CD:** GitHub Actions
-- **Deployment Platform:** Heroku
+- **Testing Framework:** Pytest, pytest-cov
+- **Code Quality:** Black, Flake8, isort
 
 ## Key Features
 
 - **RESTful API Design:** Adheres to REST principles using standard HTTP methods for CRUD operations.
-- **Asynchronous Processing:** Built entirely with asynchronous libraries (`FastAPI`, `Tortoise ORM`) for high performance and concurrency.
-- **Test-Driven Development:** Developed following TDD methodology to ensure reliability and maintainability.
-- **Containerized Environment:** Dockerized for ease of setup and deployment consistency.
-- **Database Interaction:** Utilizes an asynchronous ORM for efficient communication with the Postgres database.
-- **Automated Testing & Deployment:** Integrates with GitHub Actions for CI and facilitates streamlined deployment to Heroku.
+- **Asynchronous Processing:** Built entirely with asynchronous libraries (`FastAPI`, `Tortoise ORM`, `asyncpg`) for high performance.
+- **Database Integration:** Uses Tortoise ORM for efficient async communication with the PostgreSQL database.
+- **Database Migrations:** Schema changes managed via Aerich.
+- **Containerized Environment:** Fully containerized using Docker and Docker Compose for consistent development and deployment (`web` service + `db` service).
+- **Configuration Management:** Uses Pydantic Settings for environment-aware configuration (e.g., `DATABASE_URL`).
+- **Test-Driven Development:** Developed following TDD principles with Pytest.
+- **Code Quality Checks:** Integrated linting, formatting, and coverage reporting.
 
 ## API Endpoints
 
@@ -103,15 +104,11 @@ Database schema migrations are handled using [Aerich](https://github.com/tortois
   ```
 - **Generate Migrations (after changing models in `app/models/tortoise.py`):**
   ```bash
-  docker compose exec web aerich migrate --name <migration_name> # e.g., add_summary_length_field
+  docker compose exec web aerich migrate --name <migration_name>
   ```
 - **Apply Migrations:**
   ```bash
   docker compose exec web aerich upgrade
-  ```
-- **Downgrade Migrations:**
-  ```bash
-  docker compose exec web aerich downgrade
   ```
 - **Show Status:**
   ```bash
@@ -119,4 +116,12 @@ Database schema migrations are handled using [Aerich](https://github.com/tortois
   docker compose exec web aerich heads
   ```
 
-**Note:** Ensure `generate_schemas=False` is set in the `register_tortoise` call in `main.py` when using Aerich.
+## Code Quality and Linting
+
+This project uses several tools to ensure code quality and style consistency:
+
+- **Black:** For automated code formatting.
+- **Flake8:** For linting (style errors, potential bugs).
+- **isort:** For automatically sorting Python imports.
+
+Configuration for these tools can often be found in `pyproject.toml`.

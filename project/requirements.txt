@@ -13,3 +13,5 @@ flake8==7.2.0
 black==25.1.0
 isort==6.0.1
 pytest-xdist==3.6.1
+lxml-html-clean==0.4.2
+newspaper3k==0.2.8

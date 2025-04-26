@@ -148,7 +148,7 @@ Commands are run from the project/ directory.
 ```bash
 # Run all tests
 
-docker compose exec web python -m pytest tests
+docker compose exec web python -m pytest tests -p no:warnings
 
 # Run tests with coverage report
 

@@ -136,3 +136,29 @@ docker compose exec web flake8 .
 docker compose exec web black .
 docker compose exec web isort .
 ```
+
+## Testing and Code Coverage
+
+Testing is performed using pytest and pytest-cov. Both unit and integration tests are included in the project/tests directory.
+
+### Running Tests Locally
+
+Commands are run from the project/ directory.
+
+```bash
+# Run all tests
+
+docker compose exec web python -m pytest tests
+
+# Run tests with coverage report
+
+docker compose exec web python -m pytest --cov=app --cov-report=term-missing tests
+
+# Run tests verbosely
+
+docker compose exec web python -m pytest -vv tests
+
+# Run a specific test file or function
+
+docker compose exec web python -m pytest tests/test_summaries.py::test_read_summary
+```

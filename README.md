@@ -15,6 +15,7 @@ Testing is integral to this project, employing `pytest` for robust unit and inte
 - **Database:** PostgreSQL (via Docker)
 - **ORM:** Tortoise ORM (Asynchronous)
 - **Migrations:** Aerich
+- **Summarization:** newspaper3k, NLTK
 - **Data Validation:** Pydantic
 - **Configuration:** Pydantic Settings
 - **Containerization:** Docker, Docker Compose
@@ -23,13 +24,14 @@ Testing is integral to this project, employing `pytest` for robust unit and inte
 
 ## Key Features
 
-- **RESTful API Design:** Adheres to REST principles using standard HTTP methods for CRUD operations.
-- **Asynchronous Processing:** Built entirely with asynchronous libraries (`FastAPI`, `Tortoise ORM`, `asyncpg`) for high performance.
+- **RESTful API Design:** Adheres to REST principles using standard HTTP methods for CRUD operations on summaries.
+- **Asynchronous Processing:** Built with asynchronous libraries (`FastAPI`, `Tortoise ORM`, `asyncpg`) for high performance, including running blocking summarization tasks in a thread pool.
+- **Article Summarization:** Fetches article content from URLs and generates summaries using `newspaper3k`.
 - **Database Integration:** Uses Tortoise ORM for efficient async communication with the PostgreSQL database.
 - **Database Migrations:** Schema changes managed via Aerich.
-- **Containerized Environment:** Fully containerized using Docker and Docker Compose for consistent development and deployment (`web` service + `db` service).
+- **Containerized Environment:** Fully containerized using Docker and Docker Compose for consistent development and testing (`web` service + `db` service).
 - **Configuration Management:** Uses Pydantic Settings for environment-aware configuration (e.g., `DATABASE_URL`).
-- **Test-Driven Development:** Developed following TDD principles with Pytest.
+- **Test-Driven Development:** Developed following TDD principles with Pytest, including unit and integration tests.
 - **Code Quality Checks:** Integrated linting, formatting, and coverage reporting.
 
 ## API Endpoints
@@ -38,11 +40,12 @@ The API provides the following endpoints based on RESTful conventions:
 
 | Endpoint          | HTTP Method | CRUD Operation | Description                       |
 | :---------------- | :---------- | :------------- | :-------------------------------- |
-| `/summaries`      | `GET`       | READ           | Retrieve all summaries            |
+| `/summaries`      | `POST`      | CREATE         | Submit a URL to generate summary  |
 | `/summaries/{id}` | `GET`       | READ           | Retrieve a specific summary by ID |
-| `/summaries`      | `POST`      | CREATE         | Add a new text summary            |
-| `/summaries/{id}` | `PUT`       | UPDATE         | Update an existing summary by ID  |
+| `/summaries`      | `GET`       | READ           | Retrieve all summaries            |
+| `/summaries/{id}` | `PUT`       | UPDATE         | Update an existing summary        |
 | `/summaries/{id}` | `DELETE`    | DELETE         | Delete a summary by ID            |
+| `/ping`           | `GET`       | READ           | Health check endpoint             |
 
 ## Getting Started
 
@@ -125,3 +128,11 @@ This project uses several tools to ensure code quality and style consistency:
 - **isort:** For automatically sorting Python imports.
 
 Configuration for these tools can often be found in `pyproject.toml`.
+
+### Running Checks Locally
+
+```bash
+docker compose exec web flake8 .
+docker compose exec web black .
+docker compose exec web isort .
+```

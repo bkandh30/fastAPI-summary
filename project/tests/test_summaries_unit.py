@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest
 
@@ -7,7 +7,7 @@ from app.api import crud, summaries
 
 
 def test_create_summary(test_app, monkeypatch):
-    test_request_payload = {"url": "https://foo.bar"}
+    test_request_payload = {"url": "https://foo.bar/"}
     test_response_payload = {"id": 1, "url": "https://foo.bar/"}
 
     async def mock_post(payload):
@@ -128,7 +128,30 @@ def test_remove_summary_incorrect_id(test_app, monkeypatch):
 
 
 def test_update_summary(test_app, monkeypatch):
-    pass
+    test_request_payload = {"url": "https://foo.bar/", "summary": "updated"}
+    test_response_payload = {
+        "id": 1,
+        "url": "https://foo.bar/",
+        "summary": "summary",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+    async def mock_put(id, payload):
+        return test_response_payload
+
+    monkeypatch.setattr(crud, "put", mock_put)
+
+    response = test_app.put("/summaries/1/", data=json.dumps(test_request_payload),)
+    assert response.status_code == 200
+    response_dict = response.json()
+
+    assert response_dict["id"] == test_response_payload["id"]
+    assert response_dict["url"] == test_response_payload["url"]
+    assert response_dict["summary"] == test_response_payload["summary"]
+
+    assert "created_at" in response_dict
+    assert isinstance(response_dict["created_at"], str)
+    assert len(response_dict["created_at"]) > 0
 
 
 @pytest.mark.parametrize(
@@ -191,8 +214,17 @@ def test_update_summary(test_app, monkeypatch):
         ],
     ],
 )
+
+
 def test_update_summary_invalid(test_app, monkeypatch, summary_id, payload, status_code, detail):
-    pass
+    async def mock_put(id, payload):
+        return None
+
+    monkeypatch.setattr(crud, "put", mock_put)
+
+    response = test_app.put(f"/summaries/{summary_id}/", data=json.dumps(payload))
+    assert response.status_code == status_code
+    assert response.json()["detail"] == detail
 
 
 def test_update_summary_invalid_url(test_app):
